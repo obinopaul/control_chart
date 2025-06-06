@@ -1,0 +1,11 @@
+numpy
+pandas
+joblib
+optuna
+matplotlib
+pyswarm
+scikit-learn
+scipy
+sqlalchemy
+pytz
+plotly
