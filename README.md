@@ -119,6 +119,38 @@ python run.py -t bc -a PA1_L1 -d data/abtype1/abtype1_w50_t0.5.libsvm -f libsvm 
 - `-f libsvm`: File format
 - `-n 20`: Number of independent runs
 
+### Algorithm Comparison Framework
+
+The project includes a comprehensive comparison system for evaluating all algorithms systematically:
+
+#### Compare All Algorithms on Single Dataset
+
+```bash
+python compare.py -t bc -d data/abtype1/abtype1_w50_t0.5.libsvm -f libsvm -n 20 -s results/abtype1
+```
+
+This runs all 20+ algorithms (PA, PA1, PA2, OGD, OGD_1, OGD_2, PA1_L1, PA1_L2, PA2_L1, PA2_L2, PA1_Csplit, PA2_Csplit, PA_L1, PA_L2, PA_I_L1, PA_I_L2, PA_II_L1, PA_II_L2, Gaussian_Kernel_Perceptron, Gaussian_Kernel_OGD) on a single dataset.
+
+#### Batch Comparison Across All Datasets
+
+```bash
+python compare_all.py 1  # Run all algorithms on all abtype1 datasets
+```
+
+**Features:**
+- **Parallel Processing**: Uses ThreadPoolExecutor for concurrent execution
+- **Chunked Processing**: Processes datasets in chunks of 5 for optimal resource usage
+- **Automatic Results Organization**: Creates organized directory structure in `results/abtype{X}/`
+- **Comprehensive Coverage**: Runs all 760 datasets per abnormal type (19 window lengths × 40 parameter values)
+
+#### Distributed Computing Support
+
+For large-scale experiments, the framework includes SLURM batch scripts:
+
+```bash
+sbatch compare_all.sh  # Submit batch job for distributed computing
+```
+
 ### Using the Main Interface
 
 ```bash
@@ -162,29 +194,137 @@ The framework evaluates algorithms using multiple metrics appropriate for imbala
 
 ## Visualization and Analysis
 
-### Generate Performance Plots
+The framework provides a comprehensive suite of visualization tools for analyzing algorithm performance across different dimensions:
 
+### Core Plotting Scripts
+
+#### 1. Performance Metrics Over Time (`plot_metrics.py`)
 ```bash
-# Plot specific metric for a dataset
-python plot_performance.py 1 results abtype1_w50_t0.5 G-Mean
+python plot_metrics.py
+```
+**Output**: Individual performance plots for all 12 metrics across all datasets and algorithms
+- **Metrics**: Captured Time, Mistakes, Updates, Time, Accuracies, Sensitivities, Specificities, Precisions, G-Means, Kappas, MCCs, Cumulative Errors
+- **Organization**: `plots_metrics/abtype{X}/{metric}/{dataset}.png`
+- **Features**: Algorithm comparison with error bands over training samples
 
-# Generate all plots
-python plot_all.py
+#### 2. G-Mean Performance Analysis (`plot_gmean.py`)
+```bash
+python plot_gmean.py
+```
+**Output**: G-Mean performance across parameter space for each algorithm
+- **Visualization**: Line plots showing G-Mean vs abnormal parameter for different window lengths
+- **Coverage**: All 7 abnormal types × 14+ algorithms
+- **Organization**: `plot_G-Means/abtype{X}/abtype{X}_{algorithm}_G-Mean.png`
 
-# Create performance collages
-python plot_collage.py
+#### 3. Execution Time Analysis (`plot_time.py`)
+```bash
+python plot_time.py
+```
+**Output**: Computational efficiency analysis
+- **Visualization**: Execution time vs abnormal parameter with window length comparison
+- **Features**: Algorithm scalability assessment across parameter ranges
+- **Organization**: `plot_time/abtype{X}/abtype{X}_{algorithm}_Time.png`
 
-# Generate heatmaps
+#### 4. Comprehensive Heatmaps (`plot_heatmaps.py`)
+```bash
 python plot_heatmaps.py
 ```
+**Output**: Performance heatmaps for all metrics and algorithms
+- **Visualization**: Window Length (y-axis) vs Abnormal Parameter (x-axis) heatmaps
+- **Metrics**: All 12 performance metrics with color-coded intensity
+- **Coverage**: 7 abtypes × 18+ algorithms × 12 metrics = 1,500+ heatmaps
+- **Organization**: `plots_HeatMap/abtype{X}/{algorithm}/{metric}.png`
+- **Features**: 
+  - Automatic scaling (0-1 for bounded metrics, auto for others)
+  - High-resolution visualization with customizable colormaps
+  - Statistical significance through color intensity
 
-### Available Visualizations
+#### 5. Performance Collages (`plot_collage.py`)
+```bash
+python plot_collage.py
+```
+**Output**: Interactive HTML grids for algorithm comparison
+- **Visualization**: Browser-based scrollable tables of heatmap images
+- **Features**:
+  - Side-by-side algorithm comparison
+  - Interactive navigation through abnormal types
+  - Exportable HTML format
+  - Customizable image dimensions
+- **Algorithm Mapping**: Automatic renaming (e.g., PA1_Csplit → CSPA-I)
 
-1. **Performance vs. Time**: Algorithm comparison over training samples
-2. **G-Mean Heatmaps**: Performance across different window lengths and parameters
-3. **Time Complexity Analysis**: Computational efficiency comparison
-4. **Statistical Significance**: Error bars and confidence intervals
-5. **Algorithm Collages**: Multi-metric comparison grids
+### Batch Visualization Processing
+
+#### Generate All Plots (`plot_all.py`)
+```bash
+python plot_all.py
+```
+**Execution**: Parallel processing of multiple visualization scripts
+- **Scripts Included**:
+  - `plot_metrics_PA.py`: Passive-Aggressive algorithm focus
+  - `plot_time.py`: Execution time analysis  
+  - `plot_gmean.py`: G-Mean performance
+  - `plot_time2.py`: Extended time analysis
+  - `plot_gmean2.py`: Secondary G-Mean analysis
+- **Features**: Multi-threaded execution using CPU cores
+
+### Specialized Plotting Tools
+
+#### 1. Algorithm-Specific Performance (`plot_metrics_PA.py`)
+**Focus**: Detailed analysis of Passive-Aggressive variants
+**Coverage**: PA, PA1, PA2, and all cost-sensitive PA variants
+
+#### 2. Extended Performance Analysis (`plot_gmean2.py`, `plot_time2.py`)
+**Purpose**: Secondary analysis with different parameter configurations
+**Features**: Alternative visualization styles and parameter ranges
+
+### Visualization Output Structure
+
+```
+plots_metrics/           # Individual metric plots
+├── abtype1/
+│   ├── Accuracies/     # Accuracy plots for all datasets
+│   ├── G-Mean/         # G-Mean plots for all datasets
+│   └── ...             # All 12 metrics
+plots_HeatMap/           # Comprehensive heatmaps
+├── abtype1/
+│   ├── PA/             # PA algorithm heatmaps
+│   │   ├── G-Mean.png
+│   │   ├── Time.png
+│   │   └── ...         # All 12 metrics
+│   ├── PA1_L1/         # CSPA-I-L1 heatmaps
+│   └── ...             # All algorithms
+plot_G-Means/           # G-Mean parameter analysis
+plot_time/              # Execution time analysis
+output.html             # Interactive collage viewer
+```
+
+### Usage Examples
+
+```bash
+# Complete visualization pipeline
+python plot_all.py
+
+# Individual analysis components
+python plot_heatmaps.py     # Generate all heatmaps
+python plot_gmean.py        # G-Mean parameter analysis
+python plot_time.py         # Time complexity analysis
+python plot_metrics.py      # All metric visualizations
+python plot_collage.py      # Interactive comparison tool
+
+# View interactive results
+open output.html            # Browse algorithm comparison collages
+```
+
+### Visualization Features
+
+1. **Statistical Rigor**: Error bars, confidence intervals, multiple run averaging
+2. **Algorithm Comparison**: Side-by-side performance analysis
+3. **Parameter Space Exploration**: Systematic coverage of window lengths and abnormal parameters
+4. **Multi-Metric Analysis**: 12 performance metrics across all conditions
+5. **Interactive Tools**: Browser-based exploration and comparison
+6. **Publication Quality**: High-resolution plots with customizable styling
+7. **Batch Processing**: Automated generation of thousands of plots
+8. **Organized Output**: Hierarchical directory structure for easy navigation
 
 ## Project Structure
 
@@ -207,13 +347,23 @@ CCPR_project/
 ├── regularizers/                 # Regularization functions
 ├── sample_data/                  # Example datasets
 ├── data_generator.py             # Synthetic data generation
-├── generate_datasets.py          # Batch dataset creation
-├── run.py                        # Main execution interface
-├── ol_train.py                   # Training pipeline
-├── plot_*.py                     # Visualization scripts
+├── generate_datasets.py          # Batch dataset creation  
+├── run.py                        # Single algorithm execution
+├── compare.py                    # All algorithms on single dataset
+├── compare_all.py                # Batch comparison across all datasets
+├── ol_train.py                   # Core training pipeline
+├── plot_*.py                     # Comprehensive visualization suite
+│   ├── plot_all.py              # Parallel batch plotting
+│   ├── plot_metrics.py          # Individual metric plots
+│   ├── plot_gmean.py            # G-Mean parameter analysis
+│   ├── plot_time.py             # Execution time analysis
+│   ├── plot_heatmaps.py         # Performance heatmaps
+│   ├── plot_collage.py          # Interactive HTML comparisons
+│   └── plot_*.py                # Additional specialized plots
 ├── CV_algorithm.py               # Cross-validation and hyperparameter tuning
 ├── init_model.py                 # Model initialization
 ├── load_data.py                  # Data loading utilities
+├── plot.py                       # Core plotting functions with statistical analysis
 └── requirements.txt              # Python dependencies
 ```
 
