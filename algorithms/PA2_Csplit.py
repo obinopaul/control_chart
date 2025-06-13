@@ -1,5 +1,5 @@
 import numpy as np
-def PA2_Csplit(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None, variant = "PA-II"):
+def PA2_Csplit(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # PA1: Passive-Aggressive (PA) learning algorithms (PA-I variant)
     #--------------------------------------------------------------------------
     # Reference:
@@ -26,12 +26,10 @@ def PA2_Csplit(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None, var
     f_t = np.dot(w, x_t.T)
     hat_y_t = 1 if f_t >= 0 else -1 
 
-    n_pos=100
-    n_neg=900
     
     # Calculate class-specific regularization parameters
-    C_pos = C / n_pos  # Regularization for the positive class
-    C_neg = C / n_neg  # Regularization for the negative class
+    C_pos = C / num_positive  # Regularization for the positive class
+    C_neg = C / num_negative  # Regularization for the negative class
 
     # Hinge Loss
     l_t = max(0,1-y_t*f_t)
@@ -42,16 +40,8 @@ def PA2_Csplit(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None, var
 
         # Use C_pos if y_t is positive, otherwise use C_neg
         C = C_pos if y_t == 1 else C_neg
-        
-        # Step size calculation depending on the PA variant
-        if variant == "PA":
-            gamma_t = l_t / s_t  # Standard PA variant
-        
-        elif variant == "PA-I":
-            gamma_t = min(C, l_t / s_t)  # PA-I variant with a cap on the step size
-        
-        elif variant == "PA-II":
-            gamma_t = l_t / (s_t + 1/(2*C))  # PA-II variant with regularization term
+
+        gamma_t = l_t / (s_t + 1/(2*C))  # PA-II variant with regularization term
         
         # Update the weight vector
         model.w = w + gamma_t * y_t * x_t # Update the weight vector

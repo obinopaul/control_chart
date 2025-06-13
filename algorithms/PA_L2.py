@@ -1,6 +1,6 @@
 import numpy as np
 
-def PA_L2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA_L2(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     """
     PA: Cost-Sensitive Passive-Aggressive (PA) learning algorithms
     
@@ -33,7 +33,7 @@ def PA_L2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     w = model.w
 
     # Compute rho for maximizing weighted sum of sensitivity and specificity
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn) # Cost-sensitive parameter
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
 
     # Prediction
     f_t = np.dot(w, x_t.T)
@@ -45,13 +45,14 @@ def PA_L2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     # Update on non-zero loss
     if l_t > 0:
         s_t = np.linalg.norm(x_t) ** 2
+
         if s_t > 0:
             # Update gamma_t (tau)
             tau_numerator = 1 - y_t * f_t
             tau_denominator = (rho if y_t == 1 else 1) * s_t
             gamma_t = tau_numerator / tau_denominator  # Step size (PA variant)
         else:
-            gamma_t = 1  # Special case when the norm of x_t is zero.
+            gamma_t = 0  # Special case when the norm of x_t is zero.
 
         # Update the weight vector
         model.w = w + gamma_t * (rho if y_t == 1 else 1) * y_t * x_t

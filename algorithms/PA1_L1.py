@@ -1,6 +1,6 @@
 import numpy as np
 
-def PA1_L1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA1_L1(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     """
     PA1: Cost-Sensitive Passive-Aggressive (PA-I) learning algorithm
     
@@ -33,15 +33,14 @@ def PA1_L1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     w = model.w
     C = model.C
 
-    n_pos=100
-    n_neg=900
+
     
     # Calculate class-specific regularization parameters
-    C_pos = C / n_pos  # Regularization for the positive class
-    C_neg = C / n_neg  # Regularization for the negative class
+    C_pos = C / num_positive  # Regularization for the positive class
+    C_neg = C / num_negative  # Regularization for the negative class
     
     # Compute rho for maximizing weighted sum of sensitivity and specificity
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn) # Cost-sensitive parameter
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
 
     # Prediction
     f_t = np.dot(w, x_t.T)

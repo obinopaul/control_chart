@@ -1,5 +1,5 @@
 import numpy as np
-def PA1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA1(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # PA1: Passive-Aggressive (PA) learning algorithms (PA-I variant)
     #--------------------------------------------------------------------------
     # Reference:
@@ -30,6 +30,8 @@ def PA1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     # Update on non-zero loss
     if l_t > 0:
         s_t = np.linalg.norm(x_t) ** 2
+        # Set a default value for gamma_t in case s_t is zero
+        gamma_t = 0.0
         if s_t > 0:
             gamma_t = min(C, l_t / s_t)  # PA-I: bounded by C
         else:

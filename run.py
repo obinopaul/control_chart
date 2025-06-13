@@ -81,7 +81,47 @@ def run(task_type, algorithm_name, dataset_name, file_format, nb_runs=1, shuffle
             
         # Train the model using the best hyperparameters
         model, result = ol_train(y, xt, _options)
-        
+
+        # Save the model parameters
+        if hasattr(model, 'w') and model.w is not None:
+            model_parameters = {
+                'Algorithm': algorithm_name,
+                'Run': i + 1,
+                'W': model.w.flatten().tolist(),
+                'C': model.C
+            }
+        elif hasattr(model, 'alpha') and hasattr(model, 'SV'):
+            model_parameters = {
+                'Algorithm': algorithm_name,
+                'Run': i + 1,
+                'Alpha': model.alpha.tolist(),
+                'SupportVectors': model.SV.tolist(),
+                'C': model.C,
+                'Sigma': getattr(model, 'sigma', None),
+                'Kernel': getattr(model, 'kernel', None)
+            }
+        else:
+            # print("Warning: Model does not have recognizable attributes for saving.")
+            model_parameters = {
+                'Algorithm': algorithm_name,
+                'Run': i + 1,
+                'W': None,
+                'C': None
+            } 
+    
+        # elif hasattr(model, 'alpha'):
+        #     model_parameters = {
+        #         'Algorithm': algorithm_name,
+        #         'Run': i + 1,
+        #         'Alpha': model.alpha.flatten().tolist(),  # For kernel methods
+        #         'SV': model.SV.flatten().tolist(),
+        #         'C': model.C,
+        #         'Sigma': model.sigma,
+        #         'Kernel': model.kernel
+        #     }
+            
+        save_model_parameters(model_parameters, dataset_name, run_number = i + 1)  # Pass the run number
+                
         # Save the best model and results across all runs
         run_time = result['run_time']
         err_count = result['err_count']
@@ -119,9 +159,6 @@ def run(task_type, algorithm_name, dataset_name, file_format, nb_runs=1, shuffle
             eta_p = eta_n = 0.5  
             sum_arr[idx, i] = eta_p * sensitivities[idx] + eta_n * specificities[idx]
             
-            
-        # Save hyperparameters for this run using the updated options
-        # save_hyperparameters(algorithm_name, _options, dataset_name, run_number=i+1) 
 
     mean_error_count = round(np.mean(err_count_arr) / n, 6)
     mean_update_count = round(np.mean(nSV_arr), 6)
@@ -137,26 +174,38 @@ def run(task_type, algorithm_name, dataset_name, file_format, nb_runs=1, shuffle
     mean_cumulative_errors = np.mean(cumulative_errors_arr, axis=1)
     mean_sum = np.mean(sum_arr, axis=1)  # Calculate the mean sum metric
 
+    
+    # Calculate means and standard deviations
     return {
-        'mean_error_count': mean_error_count,
-        'mean_update_count': mean_update_count,
-        'mean_time': mean_time,
-        'mean_mistakes': mean_mistakes,
+        'mean_error_count': round(np.mean(err_count_arr) / n, 6),
+        'mean_update_count': round(np.mean(nSV_arr), 6),
+        'mean_time': round(np.mean(time_arr), 6),
         'mean_nb_SV': np.mean(nb_SV_cum_arr, axis=1),
         'mean_ticks': np.mean(time_cum_arr, axis=1),
         'captured_t': captured_t,
-        'mean_accuracies': mean_accuracies,
-        'mean_sensitivities': mean_sensitivities,
-        'mean_specificities': mean_specificities,
-        'mean_precisions': mean_precisions,
-        'mean_gmeans': mean_gmeans,
-        'mean_kappas': mean_kappas,
-        'mean_mccs': mean_mccs,
-        'mean_cumulative_errors': mean_cumulative_errors,
-        'mean_sum': mean_sum  # Include the new metric
+        'mean_mistakes': np.mean(mistakes_arr, axis=1),
+        'std_mistakes': np.std(mistakes_arr, axis=1),
+        'mean_accuracies': np.mean(accuracies_arr, axis=1),
+        'std_accuracies': np.std(accuracies_arr, axis=1),
+        'mean_sensitivities': np.mean(sensitivities_arr, axis=1),
+        'std_sensitivities': np.std(sensitivities_arr, axis=1),
+        'mean_specificities': np.mean(specificities_arr, axis=1),
+        'std_specificities': np.std(specificities_arr, axis=1),
+        'mean_precisions': np.mean(precisions_arr, axis=1),
+        'std_precisions': np.std(precisions_arr, axis=1),
+        'mean_gmeans': np.mean(gmeans_arr, axis=1),
+        'std_gmeans': np.std(gmeans_arr, axis=1),
+        'mean_kappas': np.mean(kappas_arr, axis=1),
+        'std_kappas': np.std(kappas_arr, axis=1),
+        'mean_mccs': np.mean(mccs_arr, axis=1),
+        'std_mccs': np.std(mccs_arr, axis=1),
+        'mean_cumulative_errors': np.mean(cumulative_errors_arr, axis=1),
+        'std_cumulative_errors': np.std(cumulative_errors_arr, axis=1),
+        'mean_sum': np.mean(sum_arr, axis=1),
+        'std_sum': np.std(sum_arr, axis=1)
     }
     
-
+    
 def save_hyperparameters(algorithm_name, best_hyperparameters, dataset_name):
     # Save the best hyperparameters to a CSV file
     best_hyperparameters['Algorithm'] = algorithm_name
@@ -187,7 +236,39 @@ def save_hyperparameters(algorithm_name, best_hyperparameters, dataset_name):
     # Save the updated DataFrame and confirm the operation
     df = pd.concat([df, pd.DataFrame([best_hyperparameters])], ignore_index=True)
     df.to_csv(csv_file_path, index=False)
+
+
+
+def save_model_parameters(model_parameters, dataset_name, run_number):
+
+
+    # Extract the base name of the dataset (without path or extension)
+    base_name = os.path.splitext(os.path.basename(dataset_name))[0]
     
+    # Handle the relative path for the parameters
+    middle_part = os.path.dirname(dataset_name).replace("data/", "")
+    main_path = os.path.join("model_parameters", middle_part)
+
+    # Create the directory if it does not exist
+    os.makedirs(main_path, exist_ok=True)
+
+    # Construct full path for the CSV file
+    csv_file_path = os.path.join(main_path, f"{base_name}.csv")
+
+    # Check if the file exists
+    if os.path.exists(csv_file_path):
+        # Load existing data
+        df = pd.read_csv(csv_file_path)
+    else:
+        # Create a fresh DataFrame with the appropriate columns
+        df = pd.DataFrame(columns=model_parameters.keys())
+
+    # Append the new data to the DataFrame
+    df = pd.concat([df, pd.DataFrame([model_parameters])], ignore_index=True)
+
+    # Save the updated DataFrame to the CSV file
+    df.to_csv(csv_file_path, index=False) 
+        
 
 if __name__ == '__main__':
     task_type, algorithm_name, dataset_name, file_format, n, _ = handle_parameters()

@@ -47,8 +47,8 @@ import os
 import csv
 import sys
 
-# Function to generate exactly num_values unique t values, ensuring start and stop values are included
-def generate_exact_unique_t_values(start, stop, num_values, precision=2):
+# Function to generate exactly num_values unique t values, ensuring EXACT start and stop values
+def generate_exact_unique_t_values(start, stop, num_values, precision=3):
     if num_values == 2:
         return np.array([start, stop])
 
@@ -58,9 +58,9 @@ def generate_exact_unique_t_values(start, stop, num_values, precision=2):
     # Round the values to the required precision
     rounded_values = np.round(raw_values, precision)
     
-    # Ensure start and stop values are exactly included
-    rounded_values[0] = np.round(start, precision)
-    rounded_values[-1] = np.round(stop, precision)
+    # Force exact start and stop values (no rounding errors)
+    rounded_values[0] = start
+    rounded_values[-1] = stop
     
     # If there are duplicates due to rounding, increase the precision
     if len(np.unique(rounded_values)) < num_values:
@@ -72,14 +72,16 @@ def generate_exact_unique_t_values(start, stop, num_values, precision=2):
 w_values = range(10, 101, 5)
 
 # Define the range of t for each abtype using the unique t generation function
+# EXACT ranges based on advisor's paper specifications with r=1:
+r = 1  # Standard deviation
 t_ranges = {
-    1: generate_exact_unique_t_values(0.05, 0.1, 20),  # Uptrend (range: 0.05 to 0.1)
-    2: generate_exact_unique_t_values(0.05, 0.1, 20),  # Downtrend (range: 0.05 to 0.1)
-    3: generate_exact_unique_t_values(1.5, 3.0, 20),   # Upshift (range: 1.5 to 3)
-    4: generate_exact_unique_t_values(1.5, 3.0, 20),   # Downshift (range: 1.5 to 3)
-    5: generate_exact_unique_t_values(0.5, 3.0, 20),   # Systematic (range: 0.5 to 3)
-    6: generate_exact_unique_t_values(0.5, 3.0, 20),   # Cyclic (range: 0.5 to 3)
-    7: generate_exact_unique_t_values(0.1, 0.5, 20)    # Stratification (range: 0.1 to 0.5)
+    1: generate_exact_unique_t_values(0.005*r, 0.605*r, 40),  # Slope k (Uptrend): [0.005r, 0.605r]
+    2: generate_exact_unique_t_values(0.005*r, 0.605*r, 40),  # Slope k (Downtrend): [0.005r, 0.605r] 
+    3: generate_exact_unique_t_values(0.005*r, 1.805*r, 40),  # Shift x (Upshift): [0.005r, 1.805r]
+    4: generate_exact_unique_t_values(0.005*r, 1.805*r, 40),  # Shift x (Downshift): [0.005r, 1.805r]
+    5: generate_exact_unique_t_values(0.005*r, 1.805*r, 40),  # Systematic k: [0.005r, 1.805r]
+    6: generate_exact_unique_t_values(0.005*r, 1.805*r, 40),  # Cyclic a: [0.005r, 1.805r]
+    7: generate_exact_unique_t_values(0.005*r, 0.8*r, 40)     # Standard deviation e_t: [0.005r, 0.8r]
 }
 
 # Define the abtype value from command-line argument

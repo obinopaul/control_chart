@@ -1,6 +1,6 @@
 import numpy as np
 from  math import log, exp
-def OGD(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def OGD(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # OGD: Online Gradient Descent (OGD) algorithms
     #--------------------------------------------------------------------------
     # Reference:

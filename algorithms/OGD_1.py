@@ -1,7 +1,7 @@
 import numpy as np
 from math import log, exp
 
-def OGD_1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def OGD_1(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # OGD: Online Gradient Descent (OGD) algorithms with cost-sensitive hinge loss
     #--------------------------------------------------------------------------
     # Reference:
@@ -27,8 +27,9 @@ def OGD_1(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     loss_type = model.loss_type  # type of loss
     eta = model.C  # learning rate
 
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
     # Calculate cost-sensitive parameter rho
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn)
+    # rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn)
 
     # Prediction
     f_t = np.dot(w, x_t.T)  # Use dot product for 1D arrays

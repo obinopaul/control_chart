@@ -1,6 +1,6 @@
 import numpy as np
 
-def Gaussian_Kernel_Perceptron(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None): 
+def Gaussian_Kernel_Perceptron(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative): 
     # KernelPerceptron: Non-linear perceptron algorithm by using the kernel trick
     # --------------------------------------------------------------------------
     # Reference:
@@ -31,7 +31,7 @@ def Gaussian_Kernel_Perceptron(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_
     index = model.index          # Index for budget maintenance
     
     # Calculate cost-sensitive parameter rho
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn)
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
     
     # Prediction
     last_idx = min(sv_num, max_sv)

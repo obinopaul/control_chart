@@ -76,59 +76,6 @@ def ol_train(Y, X, options):
     total_samples = len(Y)
     num_positive = np.sum(Y == 1)
     num_negative = np.sum(Y == -1)
-
-    # Initialize class-dependent costs based on the imbalance
-    c_NP_init = total_samples / num_negative  # Initial cost for False Positive
-    c_PN_init = total_samples / num_positive  # Initial cost for False Negative
-    c_i = 1  # Example-dependent cost (can be updated dynamically)
-    
-    # # Initial cost matrix before optimization
-    # cost_matrix = {
-    #     1: {1: 0, -1: c_i + c_PN_init},  # True Positive: 1, False Negative: c_i + c_PN_init
-    #     -1: {1: c_i + c_NP_init, -1: 0}  # False Positive: c_i + c_NP_init, True Negative: 1
-    # }
-
-    cost_matrix = {
-        1: {1: 0, -1: c_PN_init},  # True Positive: 0, False Negative: c_PN_init
-        -1: {1: c_NP_init, -1: 0}  # False Positive: c_NP_init, True Negative: 0
-    }
-    
-    # PSO to optimize c^{NP} and c^{PN}
-    def fitness_function(costs):
-        # Update the cost matrix with new values of c^{NP} and c^{PN}
-        c_NP, c_PN = costs
-        cost_matrix = {
-            1: {1: 0, -1: c_i + c_PN},  # False Negative
-            -1: {1: c_i + c_NP, -1: 0}  # False Positive
-        }
-
-        # Calculate the total classification cost
-        total_cost = 0
-        for t in range(n):
-            _id = ID[t]
-            y_t = Y[_id]
-            x_t = X[_id].reshape(1, -1)
-
-            # Use a deep copy of the model to avoid altering the global state
-            model_copy = copy.deepcopy(model)
-            model_copy, hat_y_t, l_t = func(y_t, x_t, model_copy, eta_p=0.5, eta_n=0.5, ratio_Tp_Tn=0.11, cost_matrix=cost_matrix)
-            total_cost += l_t
-
-        return total_cost
-
-    # Define the bounds for the PSO optimization
-    lb = [1, 1]  # Lower bounds for c^{NP} and c^{PN}
-    ub = [10, 10]  # Upper bounds for c^{NP} and c^{PN}
-
-    # # Run PSO to optimize c^{NP} and c^{PN}
-    # optimal_costs, optimal_value = pso(fitness_function, lb, ub, swarmsize=100, maxiter=100, omega=0.5, phip=0.5, phig=0.5)
-
-    # # Update the cost matrix with optimized values
-    # c_NP_opt, c_PN_opt = optimal_costs
-    # cost_matrix = {
-    #     1: {1: 1, -1: c_i + c_PN_opt},  # False Negative: optimized
-    #     -1: {1: c_i + c_NP_opt, -1: 1}  # False Positive: optimized
-    # }
    
     for t in range(n):
         _id = ID[t]
@@ -149,8 +96,8 @@ def ol_train(Y, X, options):
         else:
             ratio_Tp_Tn = float('inf')  # or some fallback value
         
-        model, hat_y_t, l_t = func(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix = cost_matrix)  # Pass weights to the algorithm
-
+        model, hat_y_t, l_t = func(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative)  # Pass weights to the algorithm
+        
         y_pred_all.append(hat_y_t)
         if hat_y_t != y_t:
             err_count += 1

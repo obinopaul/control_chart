@@ -19,36 +19,34 @@ class TimeSeriesDataGenerator:
 
     def generate_binary_class_data(self, abtype):
         s = np.arange(1, self.w + 1)
-        data1 = np.random.randn(self.a, self.w) * self.abnormal_std + self.abnormal_mean
+        # Normal data: process mean l=0, standard deviation r=1
+        data1 = np.random.randn(self.a, self.w) * 1 + 0
 
         data2 = np.zeros((self.b, self.w))
         for i in range(self.b):
-            if abtype == 1:  # Uptrend
-                data2[i] = self.abnormal_mean + np.random.randn(self.w) * self.abnormal_std + self.t * s
-            elif abtype == 2:  # Downtrend
-                data2[i] = self.abnormal_mean + np.random.randn(self.w) * self.abnormal_std - self.t * s
-            elif abtype == 3:  # Upshift
-                shift_value = self.t  # Define the shift magnitude
-                shift_point = self.w // 2  # Define the point where the shift starts (middle of the window)
-                data2[i, :shift_point] = np.random.randn(shift_point) * self.abnormal_std + self.abnormal_mean  # No shift in the first half
-                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * self.abnormal_std + self.abnormal_mean + shift_value  # Shift starts in the second half
+            if abtype == 1:  # Uptrend - slope k parameter: [0.005r, 0.605r]
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * s
+            elif abtype == 2:  # Downtrend - slope k parameter: [0.005r, 0.605r] 
+                data2[i] = 0 + np.random.randn(self.w) * 1 - self.t * s
+            elif abtype == 3:  # Upshift - shift x parameter: [0.005r, 1.805r]
+                shift_point = self.w // 2  # Shift occurs at middle of window
+                data2[i, :shift_point] = np.random.randn(shift_point) * 1 + 0  # Before shift: normal data
+                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * 1 + 0 + self.t  # After shift: add x
             
-            elif abtype == 4:  # Downshift
-                shift_value = self.t  # Define the shift magnitude
-                shift_point = self.w // 2  # Define the point where the shift starts (middle of the window)
-                data2[i, :shift_point] = np.random.randn(shift_point) * self.abnormal_std + self.abnormal_mean  # No shift in the first half
-                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * self.abnormal_std + self.abnormal_mean - shift_value  # Downshift starts in the second half
+            elif abtype == 4:  # Downshift - shift x parameter: [0.005r, 1.805r]
+                shift_point = self.w // 2  # Shift occurs at middle of window
+                data2[i, :shift_point] = np.random.randn(shift_point) * 1 + 0  # Before shift: normal data
+                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * 1 + 0 - self.t  # After shift: subtract x
             
-            elif abtype == 5:  # Systematic
-                data2[i] = self.abnormal_mean + np.random.randn(self.w) * self.abnormal_std + self.t * (-1) ** s  # Alternating pattern
+            elif abtype == 5:  # Systematic - systematic k parameter: [0.005r, 1.805r]
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * (-1) ** s  # Alternating pattern
             
-            elif abtype == 6:  # Cyclic
-                period = 8  # Define a default period (can be made variable)
-                data2[i] = self.abnormal_mean + np.random.randn(self.w) * self.abnormal_std + self.t * np.sin(2 * np.pi * s / period)
+            elif abtype == 6:  # Cyclic - cyclic a parameter: [0.005r, 1.805r]
+                period = 8  # Fixed period for cyclic pattern
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * np.sin(2 * np.pi * s / period)
             
-            elif abtype == 7:  # Stratification
-                data2[i] = self.abnormal_mean + np.random.randn(self.w) * (self.t)   # Reduced variability (stratified data)
-                # self.t is used as the standard deviation here to control the variability of the stratified data
+            elif abtype == 7:  # Stratification - std dev e_t parameter: [0.005r, 0.8r]
+                data2[i] = 0 + np.random.randn(self.w) * self.t  # self.t controls variability (std dev)
 
         # Normalize abnormal data if needed
         if self.normalize_abnormal:

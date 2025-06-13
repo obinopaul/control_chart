@@ -17,24 +17,30 @@ class TimeSeriesDataGenerator:
 
     def generate_binary_class_data(self, abtype):
         s = np.arange(1, self.w + 1)
-        data1 = np.random.randn(self.a, self.w)
+        # Normal data with mean=0, std=1 (r=1 as per specifications)
+        data1 = np.random.randn(self.a, self.w) * 1 + 0
 
         data2 = np.zeros((self.b, self.w))
         for i in range(self.b):
-            if abtype == 1:
-                data2[i] = np.random.randn(self.w) + self.t * s
-            elif abtype == 2:
-                data2[i] = np.random.randn(self.w) - self.t * s
-            elif abtype == 3:
-                data2[i] = np.random.randn(self.w) + self.t * np.ones(self.w)
-            elif abtype == 4:
-                data2[i] = np.random.randn(self.w) - self.t * np.ones(self.w)
-            elif abtype == 5:
-                data2[i] = np.random.randn(self.w) + self.t * (-1) ** s
-            elif abtype == 6:
-                data2[i] = np.random.randn(self.w) + self.t * np.cos(2 * np.pi * s / 8)
-            elif abtype == 7:
-                data2[i] = self.t * np.random.randn(self.w)
+            if abtype == 1:  # Uptrend - slope k parameter
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * s
+            elif abtype == 2:  # Downtrend - slope k parameter
+                data2[i] = 0 + np.random.randn(self.w) * 1 - self.t * s
+            elif abtype == 3:  # Upshift - shift x parameter (proper implementation)
+                shift_point = self.w // 2  # Shift occurs at middle of window
+                data2[i, :shift_point] = np.random.randn(shift_point) * 1 + 0  # Before shift
+                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * 1 + 0 + self.t  # After shift
+            elif abtype == 4:  # Downshift - shift x parameter (proper implementation) 
+                shift_point = self.w // 2  # Shift occurs at middle of window
+                data2[i, :shift_point] = np.random.randn(shift_point) * 1 + 0  # Before shift
+                data2[i, shift_point:] = np.random.randn(self.w - shift_point) * 1 + 0 - self.t  # After shift
+            elif abtype == 5:  # Systematic - systematic k parameter
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * (-1) ** s
+            elif abtype == 6:  # Cyclic - cyclic a parameter
+                period = 8  # Fixed period for cyclic pattern
+                data2[i] = 0 + np.random.randn(self.w) * 1 + self.t * np.sin(2 * np.pi * s / period)
+            elif abtype == 7:  # Stratification - standard deviation e_t parameter
+                data2[i] = 0 + np.random.randn(self.w) * self.t  # self.t controls the std dev
 
         # Normalize abnormal data if needed
         if self.normalize_abnormal:

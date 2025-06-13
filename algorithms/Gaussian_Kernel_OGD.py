@@ -1,7 +1,7 @@
 import numpy as np
 from math import log, exp
 
-def Gaussian_Kernel_OGD(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def Gaussian_Kernel_OGD(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # Kernel_OGD: Online Gradient Descent (OGD) algorithms with cost-sensitive hinge loss
     #--------------------------------------------------------------------------
     # Reference:
@@ -35,7 +35,7 @@ def Gaussian_Kernel_OGD(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=
     index = model.index             # Index for budget maintenance
     
     # Calculate cost-sensitive parameter rho
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn) # Cost-sensitive parameter
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
 
     # Prediction
     last_idx = min(sv_num, max_sv)

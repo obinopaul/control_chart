@@ -1,5 +1,5 @@
 import numpy as np
-def PA2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA2(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # PA2: Passive-Aggressive (PA) learning algorithms (PA-II variant)
     #--------------------------------------------------------------------------
     # Reference:

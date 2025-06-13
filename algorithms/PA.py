@@ -1,5 +1,5 @@
 import numpy as np
-def PA(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     # PA: Passive-Aggressive (PA) learning algorithms
     #--------------------------------------------------------------------------
     # Reference:
@@ -30,10 +30,13 @@ def PA(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     # Update on non-zero loss
     if l_t > 0:
         s_t = np.linalg.norm(x_t) ** 2
+        # Set a default value for gamma_t in case s_t is zero
+        gamma_t = 0.0
+        
         if s_t > 0:
             gamma_t = l_t / s_t  # Step size (PA variant)
         else:
-            gamma_t = 1  # Special case when the norm of x_t is zero.
+            gamma_t = 0  # Special case when the norm of x_t is zero.
 
         # Update the weight vector
         model.w = w + gamma_t * y_t * x_t 

@@ -3,9 +3,9 @@ from multiprocessing import Pool, cpu_count
 
 # List of scripts to run
 scripts = [
-    "python plot_heatmaps.py",
+    # "python plot_heatmaps.py",
     "python plot_metrics_PA.py",
-    "python plot_collage.py",
+    # "python plot_collage.py",
     "python plot_time.py",
     "python plot_gmean.py",
     "python plot_time2.py",

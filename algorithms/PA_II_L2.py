@@ -1,6 +1,6 @@
 import numpy as np
 
-def PA_II_L2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
+def PA_II_L2(y_t, x_t, model, eta_p, eta_n, num_positive, num_negative):
     """
     PA2: Cost-Sensitive Passive-Aggressive (PA-II) learning algorithm
     
@@ -34,7 +34,7 @@ def PA_II_L2(y_t, x_t, model, eta_p, eta_n, ratio_Tp_Tn, cost_matrix=None):
     C = model.C
     
     # Compute rho for maximizing weighted sum of sensitivity and specificity
-    rho = (eta_p / eta_n) * (1 / ratio_Tp_Tn)
+    rho = (eta_p * num_negative) / (eta_n * num_positive)  # Cost-sensitive parameter
 
     # Prediction
     f_t = np.dot(w, x_t.T)

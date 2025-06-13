@@ -9,6 +9,8 @@ class Model:
         # nb_class:     number of class labels
 
         UPmethod = options.method.upper()
+        self.C = getattr(options, 'C', None)  # Default initialization of C
+        
         if options.task_type == 'bc':
             self.task_type = 'bc'
 
@@ -21,6 +23,7 @@ class Model:
                 self.kernel = options.kernel                # Kernel method to use
                 self.sigma = options.sigma                  # Hyperparameter for Gaussian kernel
                 self.index = 0                              # Index for budget maintenance
+                self.C = getattr(options, 'C', None)        # Ensure C exists
 
                 if UPmethod == 'GAUSSIAN_KERNEL_OGD':
                     self.t = 1                              # Iteration number
@@ -42,28 +45,6 @@ class Model:
                 if UPmethod in ['PA1_Csplit', 'PA2_Csplit', 'PA1_CSPLIT', 'PA2_CSPLIT']:
                     self.C = options.C                     # Regularization parameter
 
-        elif options.task_type == 'mc':
-            self.task_type = 'mc'
-            self.nb_class = nb_class
-
-            # Initialize weight matrix for multiclass tasks
-            self.W = np.zeros((int(nb_class), d))
-
-            if UPmethod in ['M_PA1', 'M_PA2', 'M_PA']:
-                self.C = options.C
-
-            elif UPmethod in ['M_OGD']:
-                self.C = options.C                          # Learning rate parameter
-                self.t = 1                                  # Iteration number
-                self.regularizer = options.regularizer
-
-            elif UPmethod in ['M_CW', 'M_AROW', 'M_SCW1', 'M_SCW2']:
-                self.C = options.C                          # Hyperparameter for algorithms
-                # Initialize Sigma matrix for advanced algorithms
-                self.Sigma = options.a * np.identity(d)
-                
-            elif UPmethod == 'NEW_ALGORITHM':
-                pass
-
-            else:
-                print('Unknown method in multiclass init model.')
+        else:
+            print(f"Unknown task type or method: {options.task_type}, {options.method}")
+            self.C = None  # Default fallback
