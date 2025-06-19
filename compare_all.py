@@ -52,7 +52,8 @@ import concurrent.futures
 
 def get_datasets(abtype):
     datasets = []
-    folder_path = f"data/abtype{abtype}"
+    # folder_path = f"data/abtype{abtype}"
+    folder_path = f"/ourdisk/hpc/disc/obinopaul/auto_archive_notyet/tape_2copies/data/abtype{abtype}"
     if os.path.exists(folder_path):
         for file in os.listdir(folder_path):
             if file.endswith(".libsvm"):
@@ -88,7 +89,8 @@ def split_datasets_by_window_length(datasets):
 
 def run_model(dataset):
     dataset_name = os.path.basename(dataset)
-    save_path = os.path.join("results", os.path.basename(os.path.dirname(dataset)))
+    # save_path = os.path.join("results", os.path.basename(os.path.dirname(dataset)))
+    save_path = os.path.join("/ourdisk/hpc/disc/obinopaul/auto_archive_notyet/tape_2copies/results", os.path.basename(os.path.dirname(dataset)))
     os.makedirs(save_path, exist_ok=True)
     # if not os.path.exists(save_path):
     #    os.makedirs(save_path)
@@ -128,7 +130,7 @@ def main():
         print("Usage: python compare_all.py <abtype>")
         sys.exit(1)
 
-    os.chdir("/home/obinopaul/LIBOL-python_CS_2")
+    # os.chdir("/home/obinopaul/LIBOL-python_CS_2")
     datasets = get_datasets(abtype)
     if datasets:
         run_models_on_datasets(datasets)

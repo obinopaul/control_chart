@@ -219,7 +219,8 @@ def save_hyperparameters(algorithm_name, best_hyperparameters, dataset_name):
 
     # Correctly handle the relative path by removing only "data/" and leaving the rest
     middle_part = os.path.dirname(dataset_name).replace("data/", "")
-    main_path = os.path.join("best_hyperparameters", middle_part)
+    # main_path = os.path.join("best_hyperparameters", middle_part)
+    main_path = os.path.join("/ourdisk/hpc/disc/obinopaul/auto_archive_notyet/tape_2copies/best_hyperparameters", middle_part)
 
     # Create the directory if it does not exist, and suppress error if it already exists
     os.makedirs(main_path, exist_ok=True)

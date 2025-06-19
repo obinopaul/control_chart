@@ -6,11 +6,11 @@ import numpy as np
 
 # Define abtypes and their names
 abtypes = {
-    1: 'Uptrend',
-    2: 'Downtrend',
-    3: 'Upshift',
-    4: 'Downshift',
-    5: 'Systematic',
+    # 1: 'Uptrend',
+    # 2: 'Downtrend',
+    # 3: 'Upshift',
+    # 4: 'Downshift',
+    # 5: 'Systematic',
     6: 'Cyclic',
     7: 'Stratification'
 }
@@ -118,7 +118,7 @@ def plot_data(merged_data, algorithm, performance_metric, abtype_name, save_dir)
     plt.xlabel('Abnormal Parameter', fontsize=20)
     plt.ylabel('Window Length', fontsize=20)
 
-       # Set the ticks to reduce their number
+    # Set the ticks to reduce their number
     x_ticks = np.arange(0, len(pivot_data.columns), max(1, len(pivot_data.columns)//5))
     y_ticks = np.arange(0, len(pivot_data.index), max(1, len(pivot_data.index)//5))
 
@@ -133,7 +133,7 @@ def plot_data(merged_data, algorithm, performance_metric, abtype_name, save_dir)
 
 
 
-
+    
 def plot_performance(base_dir, result_dir):
     for abtype, abtype_name in abtypes.items():
         for algorithm in algorithms:
@@ -149,7 +149,7 @@ def plot_performance(base_dir, result_dir):
                 plot_data(merged_data, algorithm, performance_metric, abtype_name, save_dir)
 
 if __name__ == "__main__":
-    base_dir = os.path.join(r'/home/obinopaul/LIBOL-python_CS_2', 'data')
-    result_dir = os.path.join(r'/home/obinopaul/LIBOL-python_CS_2', 'results') 
+    base_dir = os.path.join(r'C:\Users\pault\Documents\3. AI and Machine Learning\2. Deep Learning\1c. App\Projects\CCPR_project', 'data')
+    result_dir = os.path.join(r'C:\Users\pault\Documents\3. AI and Machine Learning\2. Deep Learning\1c. App\Projects\CCPR_project', 'results') 
 
     plot_performance(base_dir, result_dir)

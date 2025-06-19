@@ -15,29 +15,120 @@ This project implements and evaluates cost-sensitive online learning algorithms 
 - **Visualization Tools**: Complete plotting framework for performance analysis and comparison
 - **Hyperparameter Optimization**: Bayesian optimization using Optuna for automated parameter tuning
 
-## Algorithms Implemented
 
-### Cost-Sensitive Passive-Aggressive (CSPA) Variants
+## Algorithm Analysis
 
-1. **CSPA1** (`PA1_L1.py`) - CSPA-I with ℓI loss function
-2. **CSPA2** (`PA1_L2.py`) - CSPA-I with ℓII loss function  
-3. **CSPA1-ℓI** (`PA1_Csplit.py`) - Enhanced CSPA-I with both class-specific penalties and ℓI loss
-4. **CSPA1-ℓII** (`PA_I_L1.py`, `PA_I_L2.py`) - CSPA-I variants with ℓI and ℓII losses
-5. **CSPA2-ℓI** (`PA2_Csplit.py`) - CSPA-II with ℓI loss integration
-6. **CSPA2-ℓII** (`PA_II_L1.py`, `PA_II_L2.py`) - CSPA-II variants with ℓI and ℓII losses
+Here's a breakdown of each Python file and their characteristics:
 
-### Cost-Sensitive Online Gradient Descent (CSOGD) Variants
+### **Passive-Aggressive (PA) Algorithms:**
 
-1. **CSOGD-I** (`OGD_1.py`) - CSOGD with ℓI loss function
-2. **CSOGD-II** (`OGD_2.py`) - CSOGD with ℓII loss function
+#### **PA.py**
+- **Loss Function**: Hinge Loss (`l_t = max(0,1-y_t*f_t)`)
+- **Regularization**: No C parameter (basic PA variant)
+- **Description**: Standard PA algorithm with unbounded step size
 
-### Standard Algorithms (for comparison)
+#### **PA1.py** 
+- **Loss Function**: Hinge Loss
+- **Regularization**: Single C parameter (`gamma_t = min(C, l_t / s_t)`)
+- **Description**: PA-I variant with bounded step size using C
 
-- **PA** (`PA.py`) - Standard Passive-Aggressive
-- **PA1** (`PA1.py`) - Passive-Aggressive I
-- **PA2** (`PA2.py`) - Passive-Aggressive II
-- **OGD** (`OGD.py`) - Online Gradient Descent
-- **Gaussian Kernel variants** (`Gaussian_Kernel_OGD.py`, `Gaussian_Kernel_Perceptron.py`)
+#### **PA2.py**
+- **Loss Function**: Hinge Loss  
+- **Regularization**: Single C parameter with quadratic penalty (`gamma_t = l_t / (s_t + (1 / (2 * C)))`)
+- **Description**: PA-II variant with quadratic regularization term
+
+#### **PA1_Csplit.py**
+- **Loss Function**: Hinge Loss
+- **Regularization**: C_positive and C_negative (`C_pos = C / num_positive`, `C_neg = C / num_negative`)
+- **Description**: PA-I variant with class-specific regularization parameters
+
+#### **PA2_Csplit.py**
+- **Loss Function**: Hinge Loss
+- **Regularization**: C_positive and C_negative with quadratic penalty
+- **Description**: PA-II variant with class-specific regularization parameters
+
+#### **PA_L1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (`l_t = max(0, (rho if y_t == 1 else 1) - y_t * f_t)`)
+- **Regularization**: No C parameter
+- **Description**: Basic PA with L1-type cost-sensitive loss
+
+#### **PA_L2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (`l_t = (rho if y_t == 1 else 1) * max(0, 1 - y_t * f_t)`)
+- **Regularization**: No C parameter
+- **Description**: Basic PA with L2-type cost-sensitive loss
+
+#### **PA1_L1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (L1-type)
+- **Regularization**: C_positive and C_negative
+- **Description**: PA-I variant with L1-type cost-sensitive loss and class-specific C parameters
+
+#### **PA1_L2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (L2-type)
+- **Regularization**: C_positive and C_negative
+- **Description**: PA-I variant with L2-type cost-sensitive loss and class-specific C parameters
+
+#### **PA2_L1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (L1-type)
+- **Regularization**: C_positive and C_negative with quadratic penalty
+- **Description**: PA-II variant with L1-type cost-sensitive loss and class-specific C parameters
+
+#### **PA2_L2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (L2-type)
+- **Regularization**: C_positive and C_negative with quadratic penalty
+- **Description**: PA-II variant with L2-type cost-sensitive loss and class-specific C parameters
+
+#### **PA_I_L1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (L1-type)
+- **Regularization**: Single C parameter
+- **Description**: PA-I variant with L1-type cost-sensitive loss and standard C regularization
+
+#### **PA_I_L2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (L2-type)
+- **Regularization**: Single C parameter
+- **Description**: PA-I variant with L2-type cost-sensitive loss and standard C regularization
+
+#### **PA_II_L1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (L1-type)
+- **Regularization**: Single C parameter with quadratic penalty
+- **Description**: PA-II variant with L1-type cost-sensitive loss and quadratic regularization
+
+#### **PA_II_L2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (L2-type)
+- **Regularization**: Single C parameter with quadratic penalty
+- **Description**: PA-II variant with L2-type cost-sensitive loss and quadratic regularization
+
+### **Online Gradient Descent (OGD) Algorithms:**
+
+#### **OGD.py**
+- **Loss Function**: Hinge Loss (when loss_type=1)
+- **Regularization**: Single C parameter (used as learning rate)
+- **Description**: Standard OGD with multiple loss type options (0-1, hinge, logistic, square)
+
+#### **OGD_1.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type I (L1-type)
+- **Regularization**: Single C parameter (used as learning rate)
+- **Description**: OGD with L1-type cost-sensitive loss and multiple loss options
+
+#### **OGD_2.py**
+- **Loss Function**: Cost-Sensitive Hinge Loss Type II (L2-type)
+- **Regularization**: Single C parameter (used as learning rate)
+- **Description**: OGD with L2-type cost-sensitive loss and multiple loss options
+
+### **Key Distinctions:**
+
+**L1 vs L2 Loss Types:**
+- **L1 (Type I)**: `l_t = max(0, (rho if y_t == 1 else 1) - y_t * f_t)`
+- **L2 (Type II)**: `l_t = (rho if y_t == 1 else 1) * max(0, 1 - y_t * f_t)`
+
+**PA Variant Types:**
+- **PA**: No regularization bounds
+- **PA-I**: Bounded step size with `min(C, l_t/s_t)`
+- **PA-II**: Quadratic penalty term `1/(2*C)` in denominator
+
+**C Parameter Types:**
+- **Single C**: Standard regularization parameter
+- **C_split**: Class-specific C_pos and C_neg parameters
+
 
 ## Installation
 
