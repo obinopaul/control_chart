@@ -8,27 +8,235 @@ The table below maps each algorithm used in the paper to its implementation. The
 
 ### Proposed CSPA Algorithms
 
-| Paper Name | File | Function | Loss Function | Step Size | Weight Update |
-|---|---|---|---|---|---|
-| CSPA<sub>1</sub> | `algorithms/PA1_Csplit.py` | `PA1_Csplit` | $\ell^{\text{Hinge}} = \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \min(C_t,\; \ell_t / \lVert\mathbf{x}_t\rVert^2)$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$ |
-| CSPA<sub>2</sub> | `algorithms/PA2_Csplit.py` | `PA2_Csplit` | $\ell^{\text{Hinge}} = \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \ell_t / (\lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$ |
-| CSPA-$\ell^{I}$ | `algorithms/PA_L1.py` | `PA_L1` | $\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \ell_t / \lVert\mathbf{x}_t\rVert^2$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$ |
-| CSPA-$\ell^{II}$ | `algorithms/PA_L2.py` | `PA_L2` | $\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = (1 - y_t f_t) / (\bar{\rho}_t \lVert\mathbf{x}_t\rVert^2)$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$ |
-| CSPA<sub>1</sub>-$\ell^{I}$ | `algorithms/PA1_L1.py` | `PA1_L1` | $\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \min(C_t,\; \ell_t / \lVert\mathbf{x}_t\rVert^2)$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$ |
-| CSPA<sub>1</sub>-$\ell^{II}$ | `algorithms/PA1_L2.py` | `PA1_L2` | $\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \min(C_t,\; \ell_t / (\bar{\rho}_t^2 \lVert\mathbf{x}_t\rVert^2))$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$ |
-| CSPA<sub>2</sub>-$\ell^{I}$ | `algorithms/PA2_L1.py` | `PA2_L1` | $\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \ell_t / (\lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$ |
-| CSPA<sub>2</sub>-$\ell^{II}$ | `algorithms/PA2_L2.py` | `PA2_L2` | $\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$ | $\tau_t = \ell_t / (\bar{\rho}_t^2 \lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$ | $\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$ |
+<table>
+<thead>
+<tr>
+<th>Paper Name</th>
+<th>File</th>
+<th>Function</th>
+<th>Loss Function</th>
+<th>Step Size</th>
+<th>Weight Update</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td>
+
+$\text{CSPA}_1$
+
+</td>
+<td><code>algorithms/PA1_Csplit.py</code></td>
+<td><code>PA1_Csplit</code></td>
+<td>
+
+$\ell^{\text{Hinge}} = \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \min(C_t,\; \ell_t / \lVert\mathbf{x}_t\rVert^2)$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA}_2$
+
+</td>
+<td><code>algorithms/PA2_Csplit.py</code></td>
+<td><code>PA2_Csplit</code></td>
+<td>
+
+$\ell^{\text{Hinge}} = \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \ell_t / (\lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA-}\ell^{I}$
+
+</td>
+<td><code>algorithms/PA_L1.py</code></td>
+<td><code>PA_L1</code></td>
+<td>
+
+$\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \ell_t / \lVert\mathbf{x}_t\rVert^2$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA-}\ell^{II}$
+
+</td>
+<td><code>algorithms/PA_L2.py</code></td>
+<td><code>PA_L2</code></td>
+<td>
+
+$\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = (1 - y_t f_t) / (\bar{\rho}_t \lVert\mathbf{x}_t\rVert^2)$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA}_1\text{-}\ell^{I}$
+
+</td>
+<td><code>algorithms/PA1_L1.py</code></td>
+<td><code>PA1_L1</code></td>
+<td>
+
+$\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \min(C_t,\; \ell_t / \lVert\mathbf{x}_t\rVert^2)$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA}_1\text{-}\ell^{II}$
+
+</td>
+<td><code>algorithms/PA1_L2.py</code></td>
+<td><code>PA1_L2</code></td>
+<td>
+
+$\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \min(C_t,\; \ell_t / (\bar{\rho}_t^2 \lVert\mathbf{x}_t\rVert^2))$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA}_2\text{-}\ell^{I}$
+
+</td>
+<td><code>algorithms/PA2_L1.py</code></td>
+<td><code>PA2_L1</code></td>
+<td>
+
+$\ell^{I} = \max(0,\; (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \ell_t / (\lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+$\text{CSPA}_2\text{-}\ell^{II}$
+
+</td>
+<td><code>algorithms/PA2_L2.py</code></td>
+<td><code>PA2_L2</code></td>
+<td>
+
+$\ell^{II} = (\rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}) \cdot \max(0, 1 - y_t \mathbf{\omega}_t^\top \mathbf{x}_t)$
+
+</td>
+<td>
+
+$\tau_t = \ell_t / (\bar{\rho}_t^2 \lVert\mathbf{x}_t\rVert^2 + 1/(2C_t))$
+
+</td>
+<td>
+
+$\mathbf{\omega}_{t+1} = \mathbf{\omega}_t + \tau_t \bar{\rho}_t y_t \mathbf{x}_t$
+
+</td>
+</tr>
+
+</tbody>
+</table>
 
 Where $\rho = (\eta_p T_n) / (\eta_n T_p)$ is the cost-sensitive parameter, $\bar{\rho}_t = \rho \cdot \mathbb{I}_{y_t=1} + \mathbb{I}_{y_t=-1}$, and $C_t = C^+$ if $y_t = +1$ or $C_t = C^-$ if $y_t = -1$ (class-specific regularization).
 
 ### Literature Benchmark Algorithms
 
-| Paper Name | File | Function | Reference |
-|---|---|---|---|
-| CSRDA-I | `algorithms/CSRDA_1.py` | `CSRDA_1` | Chen et al., "Cost-sensitive Regularized Dual Averaging" (IEEE ICBK, 2021) |
-| CSRDA-II | `algorithms/CSRDA_2.py` | `CSRDA_2` | Chen et al., "Cost-sensitive Regularized Dual Averaging" (IEEE ICBK, 2021) |
-| CSTG-I | `algorithms/CSTG_1.py` | `CSTG_1` | Chen et al., "Cost-sensitive Sparse Online Learning via Truncated Gradient" (SDM, 2017) |
-| CSTG-II | `algorithms/CSTG_2.py` | `CSTG_2` | Chen et al., "Cost-sensitive Sparse Online Learning via Truncated Gradient" (SDM, 2017) |
+| Paper Name    | File                    | Function  | Reference                                                                                     |
+| ------------- | ----------------------- | --------- | --------------------------------------------------------------------------------------------- |
+| CSRDA-I       | `algorithms/CSRDA_1.py` | `CSRDA_1` | Chen et al., "Cost-sensitive Regularized Dual Averaging" (IEEE ICBK, 2021)                    |
+| CSRDA-II      | `algorithms/CSRDA_2.py` | `CSRDA_2` | Chen et al., "Cost-sensitive Regularized Dual Averaging" (IEEE ICBK, 2021)                    |
+| CSTG-I        | `algorithms/CSTG_1.py`  | `CSTG_1`  | Chen et al., CSTG: An effective framework for cost-sensitive sparse online learning. (Society for Industrial and Applied Mathematics 2017).       |
+| CSTG-II       | `algorithms/CSTG_2.py`  | `CSTG_2`  | CSTG: An effective framework for cost-sensitive sparse online learning. (Society for Industrial and Applied Mathematics 2017).        |
+| $\text{PA}$            | `algorithms/PA.py`      | `PA`      | Crammer et al., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585. |
+| $\text{PA}_1$ | `algorithms/PA1.py`     | `PA1`     | Crammer et al., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585. |
+| $\text{PA}_2$ | `algorithms/PA2.py`     | `PA2`     | Crammer et al., 2006. Online passive-aggressive algorithms. Journal of Machine Learning Research, 7(Mar), pp.551-585. |
 
 ## Installation
 
@@ -40,32 +248,32 @@ pip install -r requirements.txt
 
 Each dataset contains samples of the form $(\mathbf{x}_t, y_t)$ with $y_t \in \{-1, +1\}$, where $+1$ indicates the abnormal class and $-1$ indicates the normal class. The synthetic control chart patterns are generated using the mathematical models below, following Bag et al. (2012):
 
-| Pattern | Mathematical Model |
-|---|---|
-| Normal | $x_t = \mu + r_t \sigma$ |
-| Up-trend | $x_t = \mu + r_t \sigma + g t$ |
-| Down-trend | $x_t = \mu + r_t \sigma - g t$ |
-| Up-shift | $x_t = \mu + r_t \sigma + k s$ |
-| Down-shift | $x_t = \mu + r_t \sigma - k s$ |
-| Systematic | $x_t = \mu + r_t \sigma + d(-1)^t$ |
-| Cyclic | $x_t = \mu + r_t \sigma + \alpha \sin(2\pi t / \Omega)$ |
-| Stratification | $x_t = \mu + r_t \sigma'$ |
+| Pattern        | Mathematical Model                                      |
+| -------------- | ------------------------------------------------------- |
+| Normal         | $x_t = \mu + r_t \sigma$                                |
+| Up-trend       | $x_t = \mu + r_t \sigma + g t$                          |
+| Down-trend     | $x_t = \mu + r_t \sigma - g t$                          |
+| Up-shift       | $x_t = \mu + r_t \sigma + k s$                          |
+| Down-shift     | $x_t = \mu + r_t \sigma - k s$                          |
+| Systematic     | $x_t = \mu + r_t \sigma + d(-1)^t$                      |
+| Cyclic         | $x_t = \mu + r_t \sigma + \alpha \sin(2\pi t / \Omega)$ |
+| Stratification | $x_t = \mu + r_t \sigma'$                               |
 
 The parameter ranges used for data generation are:
 
-| Symbol | Pattern | Parameter | Range |
-|---|---|---|---|
-| $m$ | All | Window length | $\{10, 15, 20, \ldots, 100\}$ |
-| $\mu$ | All | Process mean | $0$ |
-| $\sigma$ | All | Process standard deviation | $1$ |
-| $r_t$ | All | Random noise | $\mathcal{N}(0, 1)$ |
-| $g$ | Trend | Magnitude of gradient | $[0.005\sigma, 0.605\sigma]$ |
-| $k$ | Shift | Shift position | $m/2$ |
-| $s$ | Shift | Shift magnitude | $[0.005\sigma, 1.805\sigma]$ |
-| $d$ | Systematic | Magnitude | $[0.005\sigma, 1.805\sigma]$ |
-| $\alpha$ | Cyclic | Amplitude | $[0.005\sigma, 1.805\sigma]$ |
-| $\Omega$ | Cyclic | Period | $8$ |
-| $\sigma'$ | Stratification | Standard deviation | $[0.005\sigma, 0.8\sigma]$ |
+| Symbol    | Pattern        | Parameter                  | Range                         |
+| --------- | -------------- | -------------------------- | ----------------------------- |
+| $m$       | All            | Window length              | $\{10, 15, 20, \ldots, 100\}$ |
+| $\mu$     | All            | Process mean               | $0$                           |
+| $\sigma$  | All            | Process standard deviation | $1$                           |
+| $r_t$     | All            | Random noise               | $\mathcal{N}(0, 1)$           |
+| $g$       | Trend          | Magnitude of gradient      | $[0.005\sigma, 0.605\sigma]$  |
+| $k$       | Shift          | Shift position             | $m/2$                         |
+| $s$       | Shift          | Shift magnitude            | $[0.005\sigma, 1.805\sigma]$  |
+| $d$       | Systematic     | Magnitude                  | $[0.005\sigma, 1.805\sigma]$  |
+| $\alpha$  | Cyclic         | Amplitude                  | $[0.005\sigma, 1.805\sigma]$  |
+| $\Omega$  | Cyclic         | Period                     | $8$                           |
+| $\sigma'$ | Stratification | Standard deviation         | $[0.005\sigma, 0.8\sigma]$    |
 
 ### Generate a Single Dataset
 
@@ -74,6 +282,7 @@ python data_generator.py -t bc -d binary_synthetic_data.libsvm -w 48 --t 0.5 -a 
 ```
 
 **Parameters:**
+
 - `-t bc`: Binary classification task
 - `-d`: Output file path
 - `-w 48`: Window length $m$
@@ -108,6 +317,7 @@ python run.py -t bc -a PA1_L1 -d data/abtype1/abtype1_w50_t0.5.libsvm -f libsvm 
 ```
 
 **Parameters:**
+
 - `-t bc`: Binary classification task
 - `-a PA1_L1`: Algorithm name (must match the function name from the algorithms table above)
 - `-d`: Path to the dataset
@@ -138,17 +348,17 @@ sbatch compare_all.sh
 
 The following scripts generate the plots used in the paper.
 
-| Script | Description |
-|---|---|
-| `plot_heatmaps.py` | Performance heatmaps (window length vs. abnormal parameter) for all metrics and algorithms |
-| `plot_gmean.py` | G-Mean vs. abnormal parameter for each algorithm across window lengths |
-| `plot_time.py` | Execution time vs. abnormal parameter across window lengths |
-| `plot_metrics.py` | All performance metrics over training samples for each dataset |
-| `plot_metrics_PA.py` | Performance metrics focused on the PA algorithm variants |
-| `plot_cer.py` | Cumulative error rate plots |
-| `plot_collage.py` | Interactive HTML collage for side-by-side algorithm comparison |
-| `plot_performance.py` | Performance summary plots |
-| `plot_all.py` | Runs multiple plotting scripts in parallel |
+| Script                | Description                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `plot_heatmaps.py`    | Performance heatmaps (window length vs. abnormal parameter) for all metrics and algorithms |
+| `plot_gmean.py`       | G-Mean vs. abnormal parameter for each algorithm across window lengths                     |
+| `plot_time.py`        | Execution time vs. abnormal parameter across window lengths                                |
+| `plot_metrics.py`     | All performance metrics over training samples for each dataset                             |
+| `plot_metrics_PA.py`  | Performance metrics focused on the PA algorithm variants                                   |
+| `plot_cer.py`         | Cumulative error rate plots                                                                |
+| `plot_collage.py`     | Interactive HTML collage for side-by-side algorithm comparison                             |
+| `plot_performance.py` | Performance summary plots                                                                  |
+| `plot_all.py`         | Runs multiple plotting scripts in parallel                                                 |
 
 ## Project Structure
 
@@ -225,10 +435,10 @@ CCPR_main/
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{ccpr2024,
+@article{ccpr2026,
   title={Cost-Sensitive Online Learning for Control Chart Pattern Recognition},
-  author={[Author Names]},
+  author={[Paul Okafor, Talayeh Razzaghi]},
   journal={[Journal Name]},
-  year={2024}
+  year={2026}
 }
 ```
