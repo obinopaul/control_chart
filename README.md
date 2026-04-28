@@ -435,10 +435,12 @@ CCPR_main/
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{ccpr2026,
-  title={Cost-Sensitive Online Learning for Control Chart Pattern Recognition},
-  author={[Paul Okafor, Talayeh Razzaghi]},
-  journal={[Journal Name]},
-  year={2026}
+@article{okafor2026cost,
+  title={Cost-sensitive online learning for control chart pattern recognition},
+  author={Okafor, Paul and Razzaghi, Talayeh},
+  journal={Computers \& Industrial Engineering},
+  pages={112030},
+  year={2026},
+  publisher={Elsevier}
 }
 ```
